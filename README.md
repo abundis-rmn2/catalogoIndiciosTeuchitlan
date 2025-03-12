@@ -1,6 +1,10 @@
-# Galería Teuchitlán
+# Catálogo de indicios
 
-Este proyecto presenta una galería de imágenes basada en la información oficial de la Fiscalía de Jalisco.
+Este proyecto presenta una galería de indicios descubiertos en el Rancho Izaguirre basada en la información oficial de la Fiscalía de Jalisco.
+
+> “El día de hoy nos encontramos en una búsqueda en un predio que según eso ya se había cateado, pero nos estamos encontrando varias fosas, hornos crematorios y la localización de varios huesos“, así inicia la narración de uno de los videos que grabaron, el 5 de marzo de 2025, integrantes del Colectivo Guerreros Buscadores de Jalisco al interior del Rancho Izaguirre, ubicado en la comunidad La Estanzuela del municipio de Teuchitlán, Jalisco. Lugar que antes y después del “cateo y aseguramiento” realizado por la Fiscalía del Estado de Jalisco, en septiembre de 2024, se presume fue utilizado como sitio de entrenamiento forzado y un lugar de exterminio.
+>
+> Darwin Franco, [Teuchitlán: cuando la necromaquina opera impunemente](https://www.zonadocs.mx/2025/03/12/teuchitlan-cuando-la-necromaquina-opera-impunemente/), 2025.
 
 ## Fuente de Información
 
