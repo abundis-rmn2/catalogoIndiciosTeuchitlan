@@ -1,12 +1,29 @@
-# React + Vite
+# Galería Teuchitlán
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este proyecto presenta una galería de imágenes basada en la información oficial de la Fiscalía de Jalisco.
 
-Currently, two official plugins are available:
+## Fuente de Información
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+La información utilizada en este proyecto se obtuvo de la siguiente fuente oficial de la Fiscalía de Jalisco:
+[Documentación Oficial](https://docs.google.com/spreadsheets/u/0/d/1K5gul4mUWEIWc7yhlIZlheJDkqH7thPv/htmlview#gid=2057625904)
 
-## Expanding the ESLint configuration
+## Imágenes
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Las imágenes descargadas se encuentran en la carpeta `indicios/` y están organizadas por su número de identificador.
+
+## Base de Datos
+
+La base de datos completa se comparte en formato CSV y se puede encontrar en el archivo `complete_data.csv`.
+## Ejecución del Proyecto
+
+Para ejecutar el proyecto en un entorno local, utilice el siguiente comando:
+
+```bash
+npm run dev
+```
+
+Para construir el proyecto y prepararlo para su despliegue en internet, utilice el siguiente comando:
+
+```bash
+npm run build
+```
