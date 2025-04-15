@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import LazyImage from './components/LazyImage';
-import { initGA, trackEvent } from './utils/analytics'; // Import analytics utilities
+import { initGTM, trackEvent } from './utils/analytics'; // Updated import to use initGTM
 
 function App() {
   const [items, setItems] = useState([]);
@@ -122,9 +122,9 @@ function App() {
     }
   }, [currentItemIndex, selectedItem]);
 
-  // Initialize Google Analytics
+  // Initialize Google Tag Manager
   useEffect(() => {
-    initGA();
+    initGTM(); // Updated to use initGTM
   }, []);
 
   // Filter items based on criteria with improved space handling

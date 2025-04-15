@@ -15,42 +15,31 @@ const fetchGeoData = async () => {
   return geoDataCache;
 };
 
-// Google Analytics initialization
-export const initGA = () => {
-  if (!window.gtag) {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=G-2G2CDLZCH8';
-    document.head.appendChild(script);
-
-    script.onload = () => {
-      window.dataLayer = window.dataLayer || [];
-      function gtag() { window.dataLayer.push(arguments); }
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', 'G-2G2CDLZCH8');
-      console.log('Google Analytics initialized with ID: G-2G2CDLZCH8'); // Debugging log
-    };
+// Google Tag Manager initialization
+export const initGTM = () => {
+  if (!window.dataLayer) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'gtm.js', 'gtm.start': new Date().getTime() });
+    console.log('Google Tag Manager initialized'); // Debugging log
   }
 };
 
-// Function to track events with geolocation data
-export const trackEvent = async (action, category, label, value) => {
-  if (window.gtag) {
+export const trackEvent = async (eventName, category, label, value) => {
+  if (window.dataLayer) {
     const geoData = await fetchGeoData();
     const { city, country_name: country } = geoData;
 
-    console.log(`Tracking event: action=${action}, category=${category}, label=${label}, value=${value}, city=${city}, country=${country}`); // Debugging log
+    console.log(`Tracking event: event=${eventName}, category=${category}, label=${label}, value=${value}, city=${city}, country=${country}`);
 
-    // Send event with geolocation data
-    window.gtag('event', action, {
-      event_category: category,
-      event_label: label,
-      value: value,
+    window.dataLayer.push({
+      event: eventName,       // e.g., 'thumbnail_click'
+      category: category,     // e.g., 'Carousel'
+      label: label,           // e.g., '7A'
+      value: value,           // e.g., '7A'
       city: city || 'Unknown',
       country: country || 'Unknown',
     });
   } else {
-    console.warn('Google Analytics is not initialized. Event not tracked.'); // Debugging log
+    console.warn('Google Tag Manager is not initialized. Event not tracked.');
   }
 };
