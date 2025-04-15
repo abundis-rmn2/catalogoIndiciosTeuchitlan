@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import LazyImage from './components/LazyImage';
+import { initGA, trackEvent } from './utils/analytics'; // Import analytics utilities
 
 function App() {
   const [items, setItems] = useState([]);
@@ -121,6 +122,11 @@ function App() {
     }
   }, [currentItemIndex, selectedItem]);
 
+  // Initialize Google Analytics
+  useEffect(() => {
+    initGA();
+  }, []);
+
   // Filter items based on criteria with improved space handling
   const filteredItems = items.filter(item => {
     // Split colors by comma and trim whitespace
@@ -183,6 +189,7 @@ function App() {
       ...filters,
       [name]: value,
     });
+    trackEvent('filter_change', 'Filters', name, value); // Track filter change
   };
 
   // Reset all filters
@@ -201,6 +208,7 @@ function App() {
     const index = filteredItems.findIndex(i => i.id === item.id);
     setCurrentItemIndex(index);
     setSelectedItem(item);
+    trackEvent('item_click', 'Items', `${item.id} - ${item['INDICIO']}`, item['INDICIO']); // Track item click
   };
 
   // Close detail view
@@ -216,6 +224,7 @@ function App() {
     setSelectedItem(filteredItems[nextIndex]);
     // Reset mobile info state when changing items
     setShowMobileInfo(false);
+    trackEvent('navigation', 'Items', `${filteredItems[nextIndex].id} - ${filteredItems[nextIndex]['INDICIO']}`, filteredItems[nextIndex]['INDICIO']); // Track next item
   };
 
   // Navigate to previous item - Update to force image refresh
@@ -226,6 +235,7 @@ function App() {
     setSelectedItem(filteredItems[prevIndex]);
     // Reset mobile info state when changing items
     setShowMobileInfo(false);
+    trackEvent('navigation', 'Items', `${filteredItems[prevIndex].id} - ${filteredItems[prevIndex]['INDICIO']}`, filteredItems[prevIndex]['INDICIO']); // Track previous item
   };
 
   // Function to handle image loading errors - updated for LazyImage
@@ -458,6 +468,7 @@ function App() {
                       setCurrentItemIndex(index);
                       setSelectedItem(item);
                       setShowMobileInfo(false); // Reset mobile info when changing items
+                      trackEvent('thumbnail_click', 'Carousel', `${item.id} - ${item['INDICIO']}`, item['INDICIO']); // Track thumbnail click
                     }}
                   >
                     <LazyImage 
