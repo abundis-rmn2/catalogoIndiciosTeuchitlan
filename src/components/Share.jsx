@@ -9,6 +9,7 @@ function Share({ selectedItem, getImageUrl }) {
 
   const handleShare = async (platform) => {
     let url = '';
+    const prendasHablanLink = `https://lasprendashablan.tejer.red/indicio/${selectedItem['INDICIO']}`;
     switch (platform) {
       case 'whatsapp':
         const message = 
@@ -19,18 +20,20 @@ function Share({ selectedItem, getImageUrl }) {
         `• Marca: ${selectedItem['MARCA']}\n` +
         `• Talla: ${selectedItem['TALLA']}\n` +
         `• Detalles: ${selectedItem['OBSERVACIONES']}\n\n` +
-        `¿Crees que es de un familiar querido? 👉 ${shareUrl}`;
-    
-      url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
-      break;
+        `¿Crees que es de un familiar querido? 👉 ${prendasHablanLink}`;
+        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        break;
       case 'facebook':
-        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&picture=${encodeURIComponent(imageUrl)}`;
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(prendasHablanLink)}`;
         break;
       case 'messenger':
-        url = `fb-messenger://share?link=${encodeURIComponent(shareUrl)}&picture=${encodeURIComponent(imageUrl)}`;
+        url = `fb-messenger://share?link=${encodeURIComponent(prendasHablanLink)}`;
         break;
       case 'x':
-        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Mira este indicio: ${selectedItem['INDICIO']} - ${shareUrl}`)}&url=${encodeURIComponent(imageUrl)}`;
+        const messageX =
+        `🔍 Mira esta ${selectedItem['TIPO DE INDICIO']} en las #PrendasHablan\n` +
+        `${prendasHablanLink}`;
+        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(messageX)}`;
         break;
       default:
         return;
