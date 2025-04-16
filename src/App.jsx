@@ -133,13 +133,15 @@ function App() {
     initGTM(); // Updated to use initGTM
   }, []);
 
-  // Effect to handle direct navigation to a hash and update the preview image
+  // Effect to handle direct navigation to a URL and update the preview image
   useEffect(() => {
-    const hash = window.location.hash.replace('#', '').trim();
-    if (hash) {
-      const item = items.find(i => i['INDICIO'] === hash);
+    const path = window.location.pathname;
+    const match = path.match(/^\/indicio\/(.+)$/);
+    if (match) {
+      const indicio = match[1].trim();
+      const item = items.find(i => i['INDICIO'] === indicio);
       if (item) {
-        const index = items.findIndex(i => i['INDICIO'] === hash);
+        const index = items.findIndex(i => i['INDICIO'] === indicio);
         setCurrentItemIndex(index);
         setSelectedItem(item);
 
@@ -251,14 +253,14 @@ function App() {
     const index = filteredItems.findIndex(i => i.id === item.id);
     setCurrentItemIndex(index);
     setSelectedItem(item);
-    window.location.hash = item['INDICIO']; // Update URL hash
+    window.history.pushState(null, '', `/indicio/${item['INDICIO']}`); // Update URL to /indicio/[INDICIO]
     trackEvent('item_click', 'Items', `${item.id} - ${item['INDICIO']}`, item['INDICIO']); // Track item click
   };
 
   // Close detail view
   const closeDetailView = () => {
     setSelectedItem(null);
-    window.location.hash = ''; // Clear URL hash
+    window.history.pushState(null, '', '/'); // Reset URL to root
   };
 
   // Navigate to next item - Update to force image refresh
@@ -267,7 +269,7 @@ function App() {
     const nextIndex = (currentItemIndex + 1) % filteredItems.length;
     setCurrentItemIndex(nextIndex);
     setSelectedItem(filteredItems[nextIndex]);
-    window.location.hash = filteredItems[nextIndex]['INDICIO']; // Update URL hash
+    window.history.pushState(null, '', `/indicio/${filteredItems[nextIndex]['INDICIO']}`); // Update URL to /indicio/[INDICIO]
     // Reset mobile info state when changing items
     setShowMobileInfo(false);
     trackEvent('navigation', 'Items', `${filteredItems[nextIndex].id} - ${filteredItems[nextIndex]['INDICIO']}`, filteredItems[nextIndex]['INDICIO']); // Track next item
@@ -279,7 +281,7 @@ function App() {
     const prevIndex = (currentItemIndex - 1 + filteredItems.length) % filteredItems.length;
     setCurrentItemIndex(prevIndex);
     setSelectedItem(filteredItems[prevIndex]);
-    window.location.hash = filteredItems[prevIndex]['INDICIO']; // Update URL hash
+    window.history.pushState(null, '', `/indicio/${filteredItems[prevIndex]['INDICIO']}`); // Update URL to /indicio/[INDICIO]
     // Reset mobile info state when changing items
     setShowMobileInfo(false);
     trackEvent('navigation', 'Items', `${filteredItems[prevIndex].id} - ${filteredItems[prevIndex]['INDICIO']}`, filteredItems[prevIndex]['INDICIO']); // Track previous item

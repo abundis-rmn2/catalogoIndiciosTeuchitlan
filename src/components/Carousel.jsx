@@ -20,7 +20,7 @@ function Carousel({
           onClick={() => {
             setCurrentItemIndex(index);
             setSelectedItem(item);
-            window.location.hash = item['INDICIO'];
+            window.history.pushState(null, '', `/indicio/${item['INDICIO']}`);
             trackEvent('thumbnail_click', 'Carousel', `${item.id} - ${item['INDICIO']}`, item['INDICIO']);
           }}
         >

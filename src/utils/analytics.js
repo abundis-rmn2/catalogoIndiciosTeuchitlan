@@ -43,3 +43,22 @@ export const trackEvent = async (eventName, category, label, value) => {
     console.warn('Google Tag Manager is not initialized. Event not tracked.');
   }
 };
+
+export const trackShareEvent = async (platform, indicioId) => {
+  const geoData = await fetchGeoData();
+  const { city, country_name: country } = geoData;
+
+  console.log(`Tracking share event: platform=${platform}, indicioId=${indicioId}, city=${city}, country=${country}`);
+
+  if (window.dataLayer) {
+    window.dataLayer.push({
+      event: 'share',
+      platform: platform,       // e.g., 'whatsapp', 'facebook'
+      indicioId: indicioId,     // ID of the shared item
+      city: city || 'Unknown',
+      country: country || 'Unknown',
+    });
+  } else {
+    console.warn('Google Tag Manager is not initialized. Share event not tracked.');
+  }
+};
