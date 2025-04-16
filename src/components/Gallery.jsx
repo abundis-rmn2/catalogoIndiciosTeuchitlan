@@ -1,5 +1,8 @@
 import React from 'react';
 import LazyImage from './LazyImage';
+import ItemsGrid from './ItemsGrid';
+import Carousel from './Carousel';
+import Share from './Share';
 
 function Gallery({
   filteredItems,
@@ -18,36 +21,19 @@ function Gallery({
   setSelectedItem,
   setCurrentItemIndex,
 }) {
+  const baseUrl = window.location.origin;
+
   return (
     <main className="gallery-container">
       {filteredItems.length === 0 ? (
         <p className="no-results">No se encontraron resultados</p>
       ) : (
-        <div className="items-grid">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="item-card"
-              onClick={() => handleItemClick(item)}
-            >
-              <div className="item-image-container">
-                <LazyImage
-                  src={getImageUrl(item.id)}
-                  alt={`${item['INDICIO']} - ${item['TIPO DE INDICIO']}`}
-                  onError={() => handleImageError(item.id)}
-                />
-              </div>
-              <div className="item-info">
-                <h3>{item['INDICIO']}</h3>
-                <p>{item['TIPO DE INDICIO']} - {item['COLOR']}</p>
-                <p>
-                  {item['MARCA'] !== 'S/D' ? item['MARCA'] : 'Sin marca'}
-                  {item['TALLA'] && item['TALLA'] !== 'S/D' ? ` - Talla: ${item['TALLA']}` : ''}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <ItemsGrid
+          filteredItems={filteredItems}
+          handleItemClick={handleItemClick}
+          getImageUrl={getImageUrl}
+          handleImageError={handleImageError}
+        />
       )}
 
       {selectedItem && (
@@ -89,6 +75,10 @@ function Gallery({
                 <table>
                   <tbody>
                     <tr>
+                        <th>Indicio:</th>
+                        <td>{selectedItem['INDICIO'] && selectedItem['INDICIO'].trim()}</td>
+                    </tr>
+                    <tr>
                       <th>Tipo:</th>
                       <td>{selectedItem['TIPO DE INDICIO'] && selectedItem['TIPO DE INDICIO'].trim()}</td>
                     </tr>
@@ -110,33 +100,21 @@ function Gallery({
                     </tr>
                   </tbody>
                 </table>
+                <Share baseUrl={baseUrl} selectedItem={selectedItem} getImageUrl={getImageUrl} />
               </div>
             </div>
 
             {filteredItems.length > 1 && (
-              <div className="carousel-container" ref={carouselRef}>
-                {filteredItems.map((item, index) => (
-                  <div
-                    key={`thumb-${item.id}`}
-                    className={`carousel-item ${index === currentItemIndex ? 'active' : ''}`}
-                    onClick={() => {
-                      setCurrentItemIndex(index);
-                      setSelectedItem(item);
-                      window.location.hash = item['INDICIO'];
-                      trackEvent('thumbnail_click', 'Carousel', `${item.id} - ${item['INDICIO']}`, item['INDICIO']);
-                    }}
-                  >
-                    <LazyImage
-                      key={`carousel-${item.id}`}
-                      src={getImageUrl(item.id)}
-                      alt={`${item['INDICIO']} - Thumbnail`}
-                      onError={() => handleImageError(item.id)}
-                      className="carousel-thumbnail"
-                      placeholderSrc="/placeholder-image.png"
-                    />
-                  </div>
-                ))}
-              </div>
+              <Carousel
+                filteredItems={filteredItems}
+                currentItemIndex={currentItemIndex}
+                carouselRef={carouselRef}
+                setCurrentItemIndex={setCurrentItemIndex}
+                setSelectedItem={setSelectedItem}
+                getImageUrl={getImageUrl}
+                handleImageError={handleImageError}
+                trackEvent={trackEvent}
+              />
             )}
           </div>
         </div>
