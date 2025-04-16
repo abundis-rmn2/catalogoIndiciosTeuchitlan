@@ -2,6 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import LazyImage from './components/LazyImage';
 import { initGTM, trackEvent } from './utils/analytics'; // Updated import to use initGTM
+import ShareButtons from './components/ShareButtons'; // Import ShareButtons
+import Search from './components/Search'; // Import the Search component
+import FilterSection from './components/FilterSection'; // Import the FilterSection component
+import Gallery from './components/Gallery'; // Import the Gallery component
+
+const BASE_URL = 'https://rancho-izaguirre.abundis.com.mx'; // Declare BASE_URL
 
 function App() {
   const [items, setItems] = useState([]);
@@ -127,6 +133,43 @@ function App() {
     initGTM(); // Updated to use initGTM
   }, []);
 
+  // Effect to handle direct navigation to a hash and update the preview image
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '').trim();
+    if (hash) {
+      const item = items.find(i => i['INDICIO'] === hash);
+      if (item) {
+        const index = items.findIndex(i => i['INDICIO'] === hash);
+        setCurrentItemIndex(index);
+        setSelectedItem(item);
+
+        // Update the og:image meta tag
+        const imageUrl = getImageUrl(item.id);
+        let metaTag = document.querySelector('meta[property="og:image"]');
+        if (!metaTag) {
+          metaTag = document.createElement('meta');
+          metaTag.setAttribute('property', 'og:image');
+          document.head.appendChild(metaTag);
+        }
+        metaTag.setAttribute('content', imageUrl);
+      }
+    }
+  }, [items]); // Run this effect after items are loaded
+
+  // Effect to update the preview image meta tag when the selected item changes
+  useEffect(() => {
+    if (selectedItem) {
+      const imageUrl = getImageUrl(selectedItem.id);
+      let metaTag = document.querySelector('meta[property="og:image"]');
+      if (!metaTag) {
+        metaTag = document.createElement('meta');
+        metaTag.setAttribute('property', 'og:image');
+        document.head.appendChild(metaTag);
+      }
+      metaTag.setAttribute('content', imageUrl);
+    }
+  }, [selectedItem]);
+
   // Filter items based on criteria with improved space handling
   const filteredItems = items.filter(item => {
     // Split colors by comma and trim whitespace
@@ -208,12 +251,14 @@ function App() {
     const index = filteredItems.findIndex(i => i.id === item.id);
     setCurrentItemIndex(index);
     setSelectedItem(item);
+    window.location.hash = item['INDICIO']; // Update URL hash
     trackEvent('item_click', 'Items', `${item.id} - ${item['INDICIO']}`, item['INDICIO']); // Track item click
   };
 
   // Close detail view
   const closeDetailView = () => {
     setSelectedItem(null);
+    window.location.hash = ''; // Clear URL hash
   };
 
   // Navigate to next item - Update to force image refresh
@@ -222,6 +267,7 @@ function App() {
     const nextIndex = (currentItemIndex + 1) % filteredItems.length;
     setCurrentItemIndex(nextIndex);
     setSelectedItem(filteredItems[nextIndex]);
+    window.location.hash = filteredItems[nextIndex]['INDICIO']; // Update URL hash
     // Reset mobile info state when changing items
     setShowMobileInfo(false);
     trackEvent('navigation', 'Items', `${filteredItems[nextIndex].id} - ${filteredItems[nextIndex]['INDICIO']}`, filteredItems[nextIndex]['INDICIO']); // Track next item
@@ -233,6 +279,7 @@ function App() {
     const prevIndex = (currentItemIndex - 1 + filteredItems.length) % filteredItems.length;
     setCurrentItemIndex(prevIndex);
     setSelectedItem(filteredItems[prevIndex]);
+    window.location.hash = filteredItems[prevIndex]['INDICIO']; // Update URL hash
     // Reset mobile info state when changing items
     setShowMobileInfo(false);
     trackEvent('navigation', 'Items', `${filteredItems[prevIndex].id} - ${filteredItems[prevIndex]['INDICIO']}`, filteredItems[prevIndex]['INDICIO']); // Track previous item
@@ -245,7 +292,7 @@ function App() {
 
   // Function to get correct image URL with full path checking
   const getImageUrl = (itemId) => {
-    return `/indicios/${itemId}.jpg`;
+    return `${BASE_URL}/indicios/${itemId}.jpg`; // Use BASE_URL for absolute URL
   };
 
   // Function to toggle info display on mobile
@@ -262,230 +309,45 @@ function App() {
       <header className="site-header">
         <div className="header-main">
           <h1>Catálogo de Indicios - Rancho Izaguirre Teuchitlan, Jalisco </h1>
-          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Buscar..."
-              value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
-              className="search-input"
-            />
-          </div>
+          <Search 
+            value={filters.search} 
+            onChange={(value) => handleFilterChange('search', value)} 
+          />
         </div>
-        
-        {/* Filter section moved inside header */}
-        <div className="filter-section">
-          <div className="filter-toggle-container">
-            <button className="filter-toggle-button" onClick={toggleFilters}>
-              {showFilters ? 'Ocultar filtros' : 'Mostrar filtros'}
-            </button>
-          </div>
-          
-          <div className={`filter-container ${showFilters ? 'show' : ''}`}>
-            <div className="filter-content">
-              <div className="filter-group">
-                <label htmlFor="tipo-filter">Tipo:</label>
-                <select
-                  id="tipo-filter"
-                  value={filters.tipo}
-                  onChange={(e) => handleFilterChange('tipo', e.target.value)}
-                >
-                  <option value="">Todos</option>
-                  {uniqueTypes.map((type, index) => (
-                    <option key={index} value={type}>{type}</option>
-                  ))}
-                </select>
-              </div>
 
-              <div className="filter-group">
-                <label htmlFor="color-filter">Color:</label>
-                <select
-                  id="color-filter"
-                  value={filters.color}
-                  onChange={(e) => handleFilterChange('color', e.target.value)}
-                >
-                  <option value="">Todos</option>
-                  {uniqueColors.map((color, index) => (
-                    <option key={index} value={color}>{color}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="filter-group">
-                <label htmlFor="marca-filter">Marca:</label>
-                <select
-                  id="marca-filter"
-                  value={filters.marca}
-                  onChange={(e) => handleFilterChange('marca', e.target.value)}
-                >
-                  <option value="">Todas</option>
-                  {uniqueBrands.map((brand, index) => (
-                    <option key={index} value={brand}>{brand}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="filter-group">
-                <label htmlFor="talla-filter">Talla:</label>
-                <select
-                  id="talla-filter"
-                  value={filters.talla}
-                  onChange={(e) => handleFilterChange('talla', e.target.value)}
-                >
-                  <option value="">Todas</option>
-                  {uniqueSizes.map((size, index) => (
-                    <option key={index} value={size}>{size}</option>
-                  ))}
-                </select>
-              </div>
-
-              <button onClick={clearFilters} className="clear-button">Limpiar filtros</button>
-            </div>
-          </div>
-        </div>
+        <FilterSection
+          filters={filters}
+          uniqueTypes={uniqueTypes}
+          uniqueColors={uniqueColors}
+          uniqueBrands={uniqueBrands}
+          uniqueSizes={uniqueSizes}
+          showFilters={showFilters}
+          toggleFilters={toggleFilters}
+          handleFilterChange={handleFilterChange}
+          clearFilters={clearFilters}
+        />
       </header>
       
       {/* Add spacer for fixed header on mobile */}
       <div className="header-spacer"></div>
 
-      <main className="gallery-container">
-        {filteredItems.length === 0 ? (
-          <p className="no-results">No se encontraron resultados</p>
-        ) : (
-          <div className="items-grid">
-            {filteredItems.map((item) => (
-              <div 
-                key={item.id} 
-                className="item-card" 
-                onClick={() => handleItemClick(item)}
-              >
-                <div className="item-image-container">
-                  <LazyImage 
-                    src={getImageUrl(item.id)} 
-                    alt={`${item['INDICIO']} - ${item['TIPO DE INDICIO']}`} 
-                    onError={() => handleImageError(item.id)}
-                  />
-                </div>
-                <div className="item-info">
-                  <h3>{item['INDICIO']}</h3>
-                  <p>{item['TIPO DE INDICIO']} - {item['COLOR']}</p>
-                  <p>
-                    {item['MARCA'] !== 'S/D' ? item['MARCA'] : 'Sin marca'}
-                    {item['TALLA'] && item['TALLA'] !== 'S/D' ? ` - Talla: ${item['TALLA']}` : ''}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
-
-      {selectedItem && (
-        <div className="detail-overlay" onClick={closeDetailView}>
-          <div className="detail-container" onClick={(e) => e.stopPropagation()}>
-            <button className="close-button" onClick={closeDetailView}>×</button>
-            
-            {/* Navigation Arrows */}
-            {filteredItems.length > 1 && (
-              <>
-                <button className="nav-arrow prev-arrow" onClick={goToPrevItem}>&lt;</button>
-                <button className="nav-arrow next-arrow" onClick={goToNextItem}>&gt;</button>
-              </>
-            )}
-            
-            <div className="detail-content">
-              <div className="detail-image-container">
-                <LazyImage 
-                  key={`detail-${selectedItem.id}`} // Add key to force re-render
-                  src={getImageUrl(selectedItem.id)} 
-                  alt={`${selectedItem['INDICIO']} - ${selectedItem['TIPO DE INDICIO']}`}
-                  onError={() => handleImageError(selectedItem.id)}
-                  className="detail-priority-image"
-                  immediate={true} // Add prop to load immediately without delay
-                />
-              </div>
-              
-              {/* Mobile-friendly title bar that can be clicked to show more info */}
-              <div className="detail-title-bar" onClick={toggleMobileInfo}>
-                <h2>{selectedItem['INDICIO']}</h2>
-                <button className="mobile-info-toggle">
-                  {showMobileInfo ? 'Ocultar detalles' : 'Ver detalles'}
-                </button>
-              </div>
-              
-              {/* Info section that can be toggled on mobile */}
-              <div className={`detail-info ${showMobileInfo ? 'mobile-expanded' : ''}`}>
-                <table>
-                  <tbody>
-                    <tr>
-                      <th>Tipo:</th>
-                      <td>{selectedItem['TIPO DE INDICIO'] && selectedItem['TIPO DE INDICIO'].trim()}</td>
-                    </tr>
-                    <tr>
-                      <th>Color:</th>
-                      <td>{selectedItem['COLOR'] && selectedItem['COLOR'].trim()}</td>
-                    </tr>
-                    <tr>
-                      <th>Marca:</th>
-                      <td>{selectedItem['MARCA'] && selectedItem['MARCA'].trim() !== 'S/D' ? selectedItem['MARCA'].trim() : 'Sin datos'}</td>
-                    </tr>
-                    <tr>
-                      <th>Talla:</th>
-                      <td>{selectedItem['TALLA'] && selectedItem['TALLA'].trim() !== 'S/D' ? selectedItem['TALLA'].trim() : 'Sin datos'}</td>
-                    </tr>
-                    <tr>
-                      <th>Observaciones:</th>
-                      <td>{selectedItem['OBSERVACIONES'] && selectedItem['OBSERVACIONES'].trim() || 'Sin observaciones'}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                
-                {/* Fixed external link section with better validation */}
-                {selectedItem['LINK FOTO'] && selectedItem['LINK FOTO'].trim() !== '' && selectedItem['LINK FOTO'].trim() !== 'S/D' ? (
-                  <div className="external-link">
-                    <a 
-                      href={selectedItem['LINK FOTO'].trim().startsWith('http') ? 
-                        selectedItem['LINK FOTO'].trim() : 
-                        `https://${selectedItem['LINK FOTO'].trim()}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      Ver fotografía original
-                    </a>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-            
-            {/* Thumbnail Carousel with ref */}
-            {filteredItems.length > 1 && (
-              <div className="carousel-container" ref={carouselRef}>
-                {filteredItems.map((item, index) => (
-                  <div 
-                    key={`thumb-${item.id}`}
-                    className={`carousel-item ${index === currentItemIndex ? 'active' : ''}`}
-                    onClick={() => {
-                      setCurrentItemIndex(index);
-                      setSelectedItem(item);
-                      setShowMobileInfo(false); // Reset mobile info when changing items
-                      trackEvent('thumbnail_click', 'Carousel', `${item.id} - ${item['INDICIO']}`, item['INDICIO']); // Track thumbnail click
-                    }}
-                  >
-                    <LazyImage 
-                      key={`carousel-${item.id}`} // Add key to force re-render
-                      src={getImageUrl(item.id)}
-                      alt={`${item['INDICIO']} - Thumbnail`}
-                      onError={() => handleImageError(item.id)}
-                      className="carousel-thumbnail"
-                      placeholderSrc="/placeholder-image.png"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <Gallery
+        filteredItems={filteredItems}
+        handleItemClick={handleItemClick}
+        getImageUrl={getImageUrl}
+        handleImageError={handleImageError}
+        selectedItem={selectedItem}
+        closeDetailView={closeDetailView}
+        goToNextItem={goToNextItem}
+        goToPrevItem={goToPrevItem}
+        currentItemIndex={currentItemIndex}
+        carouselRef={carouselRef}
+        toggleMobileInfo={toggleMobileInfo}
+        showMobileInfo={showMobileInfo}
+        trackEvent={trackEvent}
+        setSelectedItem={setSelectedItem}
+        setCurrentItemIndex={setCurrentItemIndex}
+      />
 
       <footer>
         <p>Total de elementos: {filteredItems.length} de {items.length}</p>
@@ -494,4 +356,5 @@ function App() {
   );
 }
 
+export { BASE_URL }; // Re-add export for BASE_URL
 export default App;
