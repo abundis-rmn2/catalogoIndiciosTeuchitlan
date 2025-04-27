@@ -198,17 +198,17 @@ header h1 {
   border-radius: 8px;
   max-width: 90%;
   max-height: 90%;
-  overflow: auto;
+  overflow: unset;
   position: relative;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
   max-height: 90vh;
-  overflow-y: auto;
+  overflow-y: unset;
 }
 
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: -10px;
+  right: -10px;
   background: var(--accent-color);
   color: white;
   border: none;
@@ -219,6 +219,7 @@ header h1 {
   line-height: 1;
   cursor: pointer;
   z-index: 10;
+  padding: 0;
 }
 
 .detail-content {
@@ -421,7 +422,6 @@ footer {
 
 /* Add these styles to your existing CSS file */
 
-/* Navigation arrows */
 .nav-arrow {
   position: absolute;
   top: 50%;
@@ -430,14 +430,16 @@ footer {
   color: white;
   border: none;
   font-size: 24px;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   cursor: pointer;
   z-index: 110;
-  display: flex;
+  display: flex
+;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
 
 .nav-arrow:hover {
@@ -445,11 +447,11 @@ footer {
 }
 
 .prev-arrow {
-  left: 10px;
+  left: -35px;
 }
 
 .next-arrow {
-  right: 10px;
+  right: -35px;
 }
 
 /* Carousel styles */
@@ -577,10 +579,23 @@ footer {
   }
   
   .detail-info.mobile-expanded {
-    display: block;
+    display: flex;
     max-height: 1000px;
+    overflow: scroll;
     transition: max-height 0.5s ease-in-out;
-  }
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+}
+
+.detail-info.mobile-expanded table {
+  order: 1
+}
+
+.detail-info.mobile-expanded .historia-prendas{
+  order: 2
+}
   
   .carousel-container {
     max-height: 70px;
@@ -973,4 +988,23 @@ footer {
   .app-container {
     padding-top: 0;
   }
+}
+
+a.prendasHablan{
+  text-align: center;
+  width: 100%;
+  display: block;
+  background: #ff34a8;
+  padding: 0.5rem;
+  color: white;
+}
+
+div.historia-prendas {
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+div.historia-prendas *{
+  margin:0.5rem 0;
 }
