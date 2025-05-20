@@ -583,7 +583,7 @@ footer {
     max-height: 1000px;
     overflow: scroll;
     transition: max-height 0.5s ease-in-out;
-    flex-direction: column;
+    flex-direction: column-reverse;
     justify-content: space-between;
     align-items: flex-start;
     flex-wrap: nowrap;

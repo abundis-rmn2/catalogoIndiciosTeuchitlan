@@ -38,6 +38,7 @@ function LazyImage({ src, alt, onError, className, placeholderSrc, immediate = f
   const imageRef = useRef(null);
   const observerRef = useRef(null);
   const lastSrc = useRef(src);
+  const hasLoadedOnce = useRef(false); // Track if the image has already been loaded
   
   // Reset state when src changes
   useEffect(() => {
@@ -45,6 +46,7 @@ function LazyImage({ src, alt, onError, className, placeholderSrc, immediate = f
       setImageSrc('');
       setIsLoading(true);
       setHasError(false);
+      hasLoadedOnce.current = false; // Reset load tracking
       lastSrc.current = src;
       
       // Load immediately if requested or if already visible
@@ -62,6 +64,7 @@ function LazyImage({ src, alt, onError, className, placeholderSrc, immediate = f
     setImageSrc(loadedSrc);
     setIsLoading(false);
     setHasError(false);
+    hasLoadedOnce.current = true; // Mark as loaded
   };
   
   // Handle image loading error
@@ -90,7 +93,7 @@ function LazyImage({ src, alt, onError, className, placeholderSrc, immediate = f
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !imageSrc && !hasError) {
+        if (entries[0].isIntersecting && !hasLoadedOnce.current && !hasError) {
           queueImageLoad(src);
         }
       },
@@ -118,7 +121,7 @@ function LazyImage({ src, alt, onError, className, placeholderSrc, immediate = f
   
   return (
     <div ref={imageRef} className={`lazy-image-container ${className || ''}`}>
-      {isLoading && (
+      {isLoading && !hasLoadedOnce.current && (
         <div className="image-placeholder">
           {placeholderSrc ? 
             <img src={placeholderSrc} alt="Loading..." className="placeholder" /> :

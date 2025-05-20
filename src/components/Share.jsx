@@ -48,7 +48,7 @@ function Share({ selectedItem, getImageUrl }) {
       <h3>¿Crees que este indicio pertenece a una persona reportada como desaparecida cercana a ti? </h3>
       <p>Esta prenda u objeto fue documentada como indicio en el Rancho Izaguirre en Teuchitlán, Jalisco. Sin embargo pertenece a un familiar, amigo o conocido. 
         <b><a href={`https://lasprendashablan.tejer.red/indicio/${selectedItem['INDICIO']}`}>Las Prendas Hablan</a></b> es un trabajo periodístico que busca coincidencias entre las ropas e indicios localizados en el rancho, y aquellas portadas por personas reportadas como desaparecidas.</p>
-        <p>Si crees que este indicio está relacionado con algún familiar, amigo o conocido responde este formulario y compártenos tu historia.</p>
+        <p>Si crees que este indicio está relacionado con algún familiar, amigo te invitamos a contestar este formulario y compartirnos tu historia.”.</p>
         <a 
           className="prendasHablan" 
           href={`https://lasprendashablan.tejer.red/indicio/${selectedItem['INDICIO']}`} 

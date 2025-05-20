@@ -294,7 +294,8 @@ function App() {
 
   // Function to get correct image URL with full path checking
   const getImageUrl = (itemId) => {
-    return `${BASE_URL}/indicios/${itemId}.jpg`; // Use BASE_URL for absolute URL
+    const version = 'v1'; // Static versioning to ensure caching
+    return `${BASE_URL}/indicios/${itemId}.jpg?cache=${version}`; // Append cache-busting query parameter
   };
 
   // Function to toggle info display on mobile
